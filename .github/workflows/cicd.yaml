@@ -48,24 +48,24 @@ jobs:
         shell: bash 
         run: |
           mkdir -p ~/.ssh
-          ssh-keyscan -H "$HOST" >> ~/.ssh/known_hosts
+          ssh-keyscan -H "$CONTROLLER_HOST" >> ~/.ssh/known_hosts
 
       - name: Ensure target dir exists on server
         shell: bash
         run: |
           ssh -o IdentitiesOnly=yes -o StrictHostKeyChecking=no -i controller.pem \
-            "$USER@$HOST" "mkdir -p /home/$USER/ansible"
+            "$CONTROLLER_USER@$CONTROLLER_HOST" "mkdir -p /home/$CONTROLLER_USER/ansible"
 
       - name: Install managed host SSH key on controller 
         shell: bash
         run: |
           MANAGED_HOST_KEY=$(aws secretsmanager get-secret-value \
-            --secret-id ansible/managed_hosts_ssh_keys/devops_portfolio \
+            --secret-id ansible/managed_hosts_ssh_keys/my_portfolio \
             --query SecretString --output text || true)
 
           if [ -n "$MANAGED_HOST_KEY" ]; then
             ssh -o IdentitiesOnly=yes -o StrictHostKeyChecking=no -i controller.pem \
-              "$USER@$HOST" "
+              "$CONTOLLER_USER@$CONTROLLER_HOST" "
                 mkdir -p ~/.ssh && chmod 700 ~/.ssh
                 printf '%s' \"$MANAGED_HOST_KEY\" > ~/.ssh/managed_hosts_ssh_keys.pem
                 chmod 600 ~/.ssh/managed_hosts_ssh_keys.pem
