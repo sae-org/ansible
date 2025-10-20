@@ -41,8 +41,8 @@ jobs:
           printf '%s' "$CONTROLLER_KEY" > controller.pem
           chmod 600 controller.pem
 
-          echo "CONTROLLER_HOST=$HOST" >> $GITHUB_ENV
-          echo "CONTROLLER_USER=$USER" >> $GITHUB_ENV
+          echo "CONTROLLER_HOST=$CONTROLLER_HOST" >> $GITHUB_ENV
+          echo "CONTROLLER_USER=$CONTROLLER_USER" >> $GITHUB_ENV
 
       - name: Trust server host key
         shell: bash 
