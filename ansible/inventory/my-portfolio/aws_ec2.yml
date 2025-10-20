@@ -1,0 +1,23 @@
+---
+plugin: amazon.aws.aws_ec2
+
+regions:
+  - us-east-1  
+
+filters:
+  "tag:aws:autoscaling:groupName": ["my-portfolio-dev-ec2"]   # instance tag
+  instance-state-name: ["running"]
+
+hostnames:
+  - private-ip-address                                        # use private IP to connect
+
+compose:
+  ansible_host: private_ip_address                            # use each EC2 instance’s private IP address as the connection target for Ansible.
+
+keyed_groups:
+  - key: tags['Name']
+    prefix: ec2
+    separator: '_'
+
+strict: False
+cache: False
