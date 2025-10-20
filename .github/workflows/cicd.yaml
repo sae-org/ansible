@@ -45,13 +45,16 @@ jobs:
           echo "CONTROLLER_HOST=$CONTROLLER_HOST" >> $GITHUB_ENV
           echo "CONTROLLER_USER=$CONTROLLER_USER" >> $GITHUB_ENV
 
+      - name: Test network connectivity
+        run: nc -z -w 5 $CONTROLLER_HOST 22
+
       - name: Trust server host key
         shell: bash 
         run: |
           mkdir -p ~/.ssh
           touch ~/.ssh/known_hosts
           chmod 600 ~/.ssh/known_hosts
-          ssh-keyscan -H "$CONTROLLER_HOST" >> ~/.ssh/known_hosts
+          ssh-keyscan -v -H "$CONTROLLER_HOST" >> ~/.ssh/known_hosts
 
       - name: Ensure target dir exists on server
         shell: bash
