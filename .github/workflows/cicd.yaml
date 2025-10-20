@@ -38,7 +38,7 @@ jobs:
             --secret-id ansible/controller/ssh_key_priv \
             --query SecretString --output text)
 
-          print '%s' "$CONTROLLER_KEY" > controller.pem
+          printf '%s' "$CONTROLLER_KEY" > controller.pem
           chmod 600 controller.pem
 
           echo "CONTROLLER_HOST=$HOST" >> $GITHUB_ENV
