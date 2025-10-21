@@ -45,8 +45,10 @@ jobs:
           echo "CONTROLLER_HOST=$CONTROLLER_HOST" >> $GITHUB_ENV
           echo "CONTROLLER_USER=$CONTROLLER_USER" >> $GITHUB_ENV
 
-      - name: Test network connectivity
-        run: nc -z -w 5 $CONTROLLER_HOST 22
+      - name: Test SSH to controller
+        run: |
+          ssh -vv -o BatchMode=yes -o StrictHostKeyChecking=no \
+            -i ~/.ssh/controller.pem "$CONTROLLER_USER@$CONTROLLER_HOST" echo ok
 
       - name: Trust server host key
         shell: bash 
@@ -62,23 +64,31 @@ jobs:
           ssh -o IdentitiesOnly=yes -o StrictHostKeyChecking=no -i ~/.ssh/controller.pem \
             "$CONTROLLER_USER@$CONTROLLER_HOST" "mkdir -p /home/$CONTROLLER_USER/ansible"
 
-      - name: Install managed host SSH key on controller 
+      - name: Install All managed host SSH keys on controller (by prefix)
         shell: bash
+        env: 
+          SECRET_PREFIX: ansible/managed_hosts_ssh_keys/   # prefix for all project SSH key secrets
         run: |
-          MANAGED_HOST_KEY=$(aws secretsmanager get-secret-value \
-            --secret-id ansible/managed_hosts_ssh_keys/* \
-            --query SecretString --output text || true)
+          SECRET_NAMES=$(aws secretsmanager list-secrets \
+            --query "SecretList[?starts_with(Name, '${SECRET_PREFIX}')].Name" \
+            --output text)
 
-          if [ -n "$MANAGED_HOST_KEY" ]; then
+          ssh -o IdentitiesOnly=yes -o StrictHostKeyChecking=no -i ~/.ssh/controller.pem \
+            "$CONTROLLER_USER@$CONTROLLER_HOST" \
+            "mkdir -p ~/.ssh/managed_hosts && chmod 700 ~/.ssh/managed_hosts"
+
+          for NAME in $SECRET_NAMES; do
+            echo "Installing key: $NAME"
+
+            KEY=$(aws secretsmanager get-secret-value --secret-id "$NAME" \
+                  --query SecretString --output text)
+
+            BASENAME=$(basename "$NAME")
+
             ssh -o IdentitiesOnly=yes -o StrictHostKeyChecking=no -i ~/.ssh/controller.pem \
-              "$CONTOLLER_USER@$CONTROLLER_HOST" "
-                mkdir -p ~/.ssh && chmod 700 ~/.ssh
-                printf '%s' \"$MANAGED_HOST_KEY\" > ~/.ssh/managed_hosts_ssh_keys.pem
-                chmod 600 ~/.ssh/managed_hosts_ssh_keys.pem
-              "
-          else
-            echo "No managed host ssh key found; skipping."
-          fi
+              "$CONTROLLER_USER@$CONTROLLER_HOST" \
+              "printf '%s' \"$KEY\" > ~/.ssh/managed_hosts/${BASENAME}.pem && chmod 600 ~/.ssh/managed_hosts/${BASENAME}.pem"
+          done
 
       - name: Rsync only changed files to server
         shell: bash
@@ -98,7 +108,7 @@ jobs:
           AWS_REGION="${AWS_REGION}"
 
           cd ~/ansible
-          mkdir -p group_vars/my-portfolio/all
+          mkdir -p group_vars/all
 
           aws secretsmanager get-secret-value \
             --secret-id "$SECRET_ID" \
