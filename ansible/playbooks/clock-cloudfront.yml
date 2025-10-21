@@ -1,10 +1,12 @@
---- 
-- name: Prep Ubuntu ASG instances && Deploy NGINX container from ECR
-  hosts: ec2_my-portfolio-dev-ec2
-  become: yes 
+---
+- name: Deploy latest clock-cloudfront image
+  hosts: clock-cloudfront-asg
+  become: yes
   gather_facts: no
   vars_files:
-    - group_vars/my-portfolio/vault.yml
+    - group_vars/all/vault.yml
+  vars: 
+    ansible_ssh_private_key_file: ~/.ssh/managed_hosts/clock-cloudfront.pem
 
   tasks:
     - name: Compute registry from vault vars
@@ -13,7 +15,7 @@
 
     - name: Compute image_ref from vault vars
       set_fact:
-        image_ref: "{{ registry }}/{{ ecr_repo }}:{{ image_tag }}"
+        image_ref: "{{ registry }}/{{ ecr_repo_clock_cloudfront }}:{{ image_tag }}"
 
     - name: Ensure base packages
       apt:
@@ -66,6 +68,7 @@
         registry_url: "{{ registry }}"
         username: AWS
         password: "{{ ecr_pwd.stdout }}"
+      changed_when: false  
 
     - name: Pull image
       community.docker.docker_image:
@@ -74,7 +77,7 @@
 
     - name: Run/replace container
       community.docker.docker_container:
-        name: "{{ container_name }}"
+        name: "{{ container_name_clock_cloudfront }}"
         image: "{{ image_ref }}"
         state: started
         recreate: true
