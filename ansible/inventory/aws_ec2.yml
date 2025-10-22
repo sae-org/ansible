@@ -1,16 +1,16 @@
-plugin: amazon.aws.ec2              # use AWS EC2 plugin to auto-discover hosts
+plugin: amazon.aws.ec2                         # use the AWS EC2 plugin to automatically find EC2 instances
 regions:
-  - us-east-1                       # AWS region to search for instances
+  - us-east-1                                  # look for instances in the us-east-1 region
 
 filters:
-  instance-state-name: running      # include only running instances
+  instance-state-name: running                 # include only EC2 instances that are currently running
 
 hostnames:
-  - private-ip-address              # use private IPs as hostnames (default SSH target)
+  - private-ip-address                         # use each instance's private IP as its connection hostname
 
 compose:
-  ansible_host: private_ip_address  # map ansible_host variable to private IP
+  ansible_host: private_ip_address             # map the ansible_host variable to the private IP address
 
 keyed_groups:
-  - key: tags.Name                  # group hosts by their Name tag
-    prefix: ""                      # no prefix; group name = exact tag value
+  - key: tags.Name                             # group instances by their AWS Name tag
+    prefix: ""                                 # no prefix — the group name equals the tag value directly
