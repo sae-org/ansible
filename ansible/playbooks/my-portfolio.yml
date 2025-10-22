@@ -1,5 +1,5 @@
 --- 
-- name: Prep Ubuntu ASG instances && Deploy NGINX container from ECR
+- name: Prep Ubuntu instances && Deploy container from ECR
   hosts: my-portfolio-dev-ec2
   become: yes 
   gather_facts: no
