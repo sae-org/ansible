@@ -6,14 +6,10 @@ filters:
   instance-state-name: running 
   "tag:Name": my-portfolio-dev-ec2             
 
-hostnames:
-  - private_ip_address                        
+hostnames: [private-ip-address]
 
 compose:
-  ansible_host: private_ip_address       
-
-groups:
-  my_portfolio_dev_ec2: "'my-portfolio-dev-ec2' in tags.Name"      
+  ansible_host: private_ip_address          
 
 keyed_groups:
   - key: tags.Name                            
