@@ -122,9 +122,9 @@ jobs:
             --region "$AWS_REGION" \
             --query SecretString --output text > group_vars/all/vault.yml
 
-          chown -R "$CONTROLLER_USER":"$CONTROLLER_USER" group_vars
-          chmod 750 group_vars group_vars/all
-          chmod 640 group_vars/all/vault.yml
+          sudo chown -R "$CONTROLLER_USER":"$CONTROLLER_USER" group_vars
+          sudo chmod 750 group_vars group_vars/all
+          sudo chmod 640 group_vars/all/vault.yml
 
           ansible-vault encrypt group_vars/all/vault.yml \
             --vault-password-file ~/ansible/secrets_script.sh
