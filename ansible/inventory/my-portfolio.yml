@@ -7,10 +7,13 @@ filters:
   "tag:Name": my-portfolio-dev-ec2             
 
 hostnames:
-  - private-ip-address                        
+  - private_ip_address                        
 
 compose:
-  ansible_host: private_ip_address             
+  ansible_host: private_ip_address       
+
+groups:
+  my_portfolio_dev_ec2: "'my-portfolio-dev-ec2' in tags.Name"      
 
 keyed_groups:
   - key: tags.Name                            
