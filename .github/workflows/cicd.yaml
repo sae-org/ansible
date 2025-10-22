@@ -122,7 +122,7 @@ jobs:
             --region "$AWS_REGION" \
             --query SecretString --output text > group_vars/all/vault.yml
 
-          chown -R "$USER":"$USER" group_vars
+          chown -R "$CONTROLLER_USER":"$CONTROLLER_USER" group_vars
           chmod 750 group_vars group_vars/all
           chmod 640 group_vars/all/vault.yml
 
