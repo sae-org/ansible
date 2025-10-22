@@ -1,6 +1,6 @@
 --- 
 - name: Prep Ubuntu instances && Deploy container from ECR
-  hosts: tag_Name_my_portfolio_dev_ec2
+  hosts: my_portfolio_dev_ec2
   become: yes 
   gather_facts: no
   vars_files:

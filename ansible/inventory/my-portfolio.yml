@@ -3,7 +3,8 @@ regions:
   - us-east-1                                  
 
 filters:
-  instance-state-name: running              
+  instance-state-name: running 
+  "tag:Name": my-portfolio-dev-ec2             
 
 hostnames:
   - private-ip-address                        
