@@ -1,6 +1,6 @@
 ---
 - name: Deploy latest clock-cloudfront image
-  hosts: clock-cloudfront-asg
+  hosts: _clock_cloudfront_asg
   become: yes
   gather_facts: no
   vars_files:
