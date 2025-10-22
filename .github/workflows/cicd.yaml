@@ -115,7 +115,8 @@ jobs:
           AWS_REGION="${AWS_REGION}"
 
           cd ~/ansible
-          mkdir -p group_vars/all
+          sudo mkdir -p group_vars/all
+          sudo chown -R "$CONTROLLER_USER":"$CONTROLLER_USER" group_vars
 
           aws secretsmanager get-secret-value \
             --secret-id "$SECRET_ID" \
