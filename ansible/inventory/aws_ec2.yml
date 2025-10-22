@@ -1,4 +1,4 @@
-plugin: amazon.aws.ec2                         # use the AWS EC2 plugin to automatically find EC2 instances
+plugin: amazon.aws.aws_ec2                         # use the AWS EC2 plugin to automatically find EC2 instances
 regions:
   - us-east-1                                  # look for instances in the us-east-1 region
 
